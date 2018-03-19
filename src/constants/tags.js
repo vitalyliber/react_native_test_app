@@ -1,0 +1,2 @@
+export const TAGS_SELECT = 'TAGS_SELECT';
+export const TAGS_DESELECT = 'TAGS_DESELECT';

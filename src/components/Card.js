@@ -2,11 +2,12 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { tags_select, tags_deselect } from "../actions/tags";
 
-@connect(({ tags }) => ({ tags }))
-export default class Event extends PureComponent {
+class Event extends PureComponent {
   static propTypes = {
     date: PropTypes.instanceOf(Date).isRequired,
   };
@@ -48,7 +49,7 @@ export default class Event extends PureComponent {
   }
 
   renderTagsRow() {
-    const { tags } = this.props;
+    const { tags, tags_select, tags_deselect } = this.props;
 
     return (
       <View style={styles.area}>
@@ -56,10 +57,16 @@ export default class Event extends PureComponent {
 
         <View style={styles.tagsContainer}>
           {
-            tags.map((tag, index) => (
-              <TouchableOpacity key={tag} style={styles.tag}>
-                <Text style={styles.tagText}>#{tag}</Text>
-              </TouchableOpacity>
+            tags.map((tag) => (
+              tag.active ? (
+                <TouchableOpacity onPress={() => tags_deselect(tag)} key={tag.id} style={styles.tagActive}>
+                  <Text  style={styles.tagTextActive}>#{tag.name}</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => tags_select(tag)} key={tag.id} style={styles.tag}>
+                  <Text  style={styles.tagText}>#{tag.name}</Text>
+                </TouchableOpacity>
+                )
               )
             )
           }
@@ -68,6 +75,19 @@ export default class Event extends PureComponent {
     );
   }
 }
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      tags_select,
+      tags_deselect,
+    },
+    dispatch
+  );
+
+const mapStateToProps = state => ({ tags: state.tags });
+
+export default connect(mapStateToProps, mapDispatchToProps)(Event);
 
 const styles = StyleSheet.create({
   container: {
@@ -121,8 +141,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 9,
   },
+  tagActive: {
+    borderColor: '#D7C191',
+    backgroundColor: '#D7C191',
+    borderRadius: 5,
+    borderWidth: 1,
+    marginBottom: 7,
+    marginRight: 7,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
   tagText: {
     color: '#a8a8a8',
+    fontSize: 16,
+  },
+  tagTextActive: {
+    color: '#000000',
     fontSize: 16,
   },
 });
