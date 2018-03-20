@@ -1,11 +1,19 @@
 import React, { PureComponent } from 'react';
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ImageBackground,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { bindActionCreators } from "redux";
 
-export default class Background extends PureComponent {
+class Background extends PureComponent {
   render() {
-    const { children, footer } = this.props;
+    const { children, footer, datepicker } = this.props;
 
     return (
       <ImageBackground
@@ -26,11 +34,25 @@ export default class Background extends PureComponent {
           {children}
         </View>
 
-        {footer}
+        { !datepicker && Platform.OS === 'ios' &&
+          footer
+        }
       </ImageBackground>
     );
   }
 }
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {},
+    dispatch
+  );
+
+const mapStateToProps = state => ({
+  datepicker: state.datepicker,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Background);
 
 const styles = StyleSheet.create({
   backgroundImage: {

@@ -3,9 +3,15 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
+import {
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  View,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { tags_select, tags_deselect } from "../actions/tags";
+import { datepicker_open, datepicker_close } from "../actions/datepicker";
 
 class Event extends PureComponent {
   static propTypes = {
@@ -33,13 +39,15 @@ class Event extends PureComponent {
   }
 
   renderTimeRow() {
-    const { date } = this.props;
+    const { date, datepicker_open, datepicker_close, datepicker } = this.props;
 
     return (
       <View style={styles.row}>
         <Text style={[styles.label, styles.labelFixed]}>when</Text>
 
-        <TouchableOpacity style={styles.calendarButton}>
+        <TouchableOpacity
+          onPress={datepicker ? datepicker_close : datepicker_open}
+          style={styles.calendarButton}>
           <Text style={styles.valueTime}>{moment(date).format('DD.MM.YYYY')}</Text>
 
           <Icon color="#c3c3c3" name="calendar" size={27} style={styles.calendarIcon} />
@@ -81,11 +89,17 @@ const mapDispatchToProps = dispatch =>
     {
       tags_select,
       tags_deselect,
+      datepicker_open,
+      datepicker_close,
     },
     dispatch
   );
 
-const mapStateToProps = state => ({ tags: state.tags });
+const mapStateToProps = state => ({
+  tags: state.tags,
+  date: state.date ,
+  datepicker: state.datepicker
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Event);
 
